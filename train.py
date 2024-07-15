@@ -1,3 +1,17 @@
+#!/usr/bin/python3
+"""
+PRE-AMBLE
+==========
+
+Template file to standardize machine learning approach.
+
++ Initialize: Config/Model/Dataset
++ Learning:   Train/Validate/Test
++ Drivers:    Main/Hydra/Fold/Train
+
+"""
+
+
 # System Imports
 import argparse
 import os
@@ -8,6 +22,12 @@ import time
 # Library Imports
 import numpy as np
 import torch
+
+# Local Imports
+# sys.path.append()
+# import layers
+# import data_loaders
+
 
 #-------
 # Args
@@ -27,12 +47,17 @@ class Model(Module):
     def __init__(self,)
         super(Model, self).__init__()
     def forward(self):
-	    return None
+	return None
 
 
 #---------
 # Helpers
 #---------
+
+
+#----------------------
+# Config/Model/Dataset
+#----------------------
 
 def setup(args):
     # Set device
@@ -59,7 +84,6 @@ def load(cfg):
     model = Model()
     return model, train_dl, val_dl, test_dl
 
-
 #---------------------
 # Train/Validate/Test
 #---------------------
@@ -73,12 +97,14 @@ def train(criterion, data, model, optimizer):
     optimizer.step()
     return loss.item()
 
+
 @torch.no_grad()
 def validate(criterion, data, model):
     model.eval()
     output = model(data.x)
     loss = criterion(output, data.label)
     return loss.item()
+
 
 @torch.no_grad()
 def test(criterion, data, model):
@@ -128,11 +154,11 @@ def run_training(args, model, train_dl, val_dl):
         end = time.time()
         train_loss = train_loss/count
         scheduler.step()
-
+        
         # Validate per Batch
         model.eval()
         val_loss, count = 0, 0
-        for i,data in enumerate(val_dl):
+        for i,data in enumerate(val_dl): 
             batch_loss = validate(cfg, data, model, meann, mad)
 
             batch_size = data.y.shape[0]
@@ -173,7 +199,6 @@ def run_training(args, model, train_dl, val_dl):
 
     return best
 
-
 #----------------------------------------------------------------------------------------------------------------------------------------------------
 
 def run(args):
@@ -211,3 +236,4 @@ def run(args):
 
 if __name__ == '__main__':
     run()
+
