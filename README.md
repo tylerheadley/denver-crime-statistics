@@ -3,7 +3,9 @@
 **2024 UCLA Computational and Applied Mathematics REU Project**
 
 Principal Investigators: Professor Andrea Bertozzi, Professor Jeff Brantingham
+
 Mentors: Dr. Justin Baker, Dr. Adrien Weihs
+
 Student Researchers: Tyler Headley, Narayanan Kannan, Haoyang Lyu and Anand Somayajula
 
 ## Overview
