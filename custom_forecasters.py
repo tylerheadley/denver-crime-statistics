@@ -373,23 +373,29 @@ class ExponentiallyWeightedMovingAverage:
         return pred
 
 
+import pandas as pd
+import numpy as np
 from gluonts.model.predictor import Predictor
-from gluonts.dataset.common import ListDataset
+from gluonts.dataset.pandas import PandasDataset
 from gluonts.model.forecast import SampleForecast
 from gluonts.dataset.field_names import FieldName
 from typing import List
 
 class CustomForecaster(Predictor):
     def __init__(self, freq: str, forecast_model, prediction_length: int):
-        super().__init__(freq=freq, prediction_length=prediction_length)
+        super().__init__(prediction_length=prediction_length)
         self.forecast_model = forecast_model
+        self.freq = freq
 
-    def predict(self, dataset: ListDataset, num_samples: int = 100) -> List[SampleForecast]:
+
+    def predict(self, dataset: PandasDataset, num_samples: int = 100) -> List[SampleForecast]:
         forecasts = []
 
-        for entry in dataset:
-            ts = entry['target']
-            start = entry['start']
+        print(dataset)
+        for _, entry in dataset.data.iterrows():
+            ts = entry[FieldName.TARGET]
+            start = entry[FieldName.START]
+            item_id = entry[FieldName.ITEM_ID]
             index = pd.date_range(start=start, periods=len(ts) + self.prediction_length, freq=self.freq)
             history = ts[-self.prediction_length:]
 
@@ -400,7 +406,7 @@ class CustomForecaster(Predictor):
             pred_df = model.predict(prediction_index)
             pred_samples = np.tile(pred_df.values, (num_samples, 1, 1)).squeeze()
 
-            forecast = SampleForecast(pred_samples, start_date=prediction_index[0], item_id=entry.get(FieldName.ITEM_ID))
+            forecast = SampleForecast(pred_samples, start_date=prediction_index[0], item_id=item_id)
             forecasts.append(forecast)
 
         return forecasts
